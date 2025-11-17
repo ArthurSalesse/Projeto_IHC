@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOCAFLIX - Protótipo</title>
+    <!-- Carregando o Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Carregando a fonte Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Definindo a fonte padrão */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        /* Efeito de hover legado (agora aplicado no JS para cartões de carrossel) */
+        .movie-card-legacy:hover {
+            transform: scale(1.03);
+            box-shadow: 0 10px 20px rgba(239, 68, 68, 0.2);
+        }
+
+        /* --- NOVOS ESTILOS PARA INTERFACE FLUIDA --- */
+
+        /* Estilos para os botões de filtro de gênero */
+        .genre-btn {
+            padding: 0.5rem 1.25rem; /* 8px 20px */
+            border-radius: 9999px; /* rounded-full */
+            font-weight: 600; /* font-semibold */
+            background-color: #374151; /* gray-700 */
+            color: #d1d5db; /* gray-300 */
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .genre-btn:hover {
+            background-color: #4b5563; /* gray-600 */
+            color: #ffffff; /* white */
+        }
+        /* Estado ativo para o botão de filtro */
+        .genre-btn.active {
+            background-color: #ef4444; /* red-500 */
+            color: #ffffff; /* white */
+            border-color: #f87171; /* red-400 */
+        }
+
+        /* Estilos para o carrossel horizontal */
+        .scroll-container {
+            display: flex;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 1rem 0.25rem 1.5rem 0.25rem; /* 16px 4px 24px 4px */
+            -webkit-overflow-scrolling: touch; /* Para iOS */
+            scrollbar-width: thin; /* Para Firefox */
+            scrollbar-color: #ef4444 #4b5563; /* red-500 gray-600 */
+        }
+        /* Barra de rolagem customizada para WebKit (Chrome, Safari) */
+        .scroll-container::-webkit-scrollbar {
+            height: 8px;
+        }
+        .scroll-container::-webkit-scrollbar-track {
+            background: #374151; /* gray-700 */
+            border-radius: 4px;
+        }
+        .scroll-container::-webkit-scrollbar-thumb {
+            background: #ef4444; /* red-500 */
+            border-radius: 4px;
+        }
+        .scroll-container::-webkit-scrollbar-thumb:hover {
+            background: #dc2626; /* red-600 */
+        }
+
+        /* Card dentro do carrossel */
+        .scroll-card {
+            flex: 0 0 auto; /* Não encolhe, não cresce, baseia-se no width */
+            width: 45%; /* ~2.2 cards na tela mobile */
+            margin-right: 1rem; /* 16px */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .scroll-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(239, 68, 68, 0.2);
+        }
+        @media (min-width: 640px) { /* sm */
+            .scroll-card { width: 30%; } /* ~3.3 cards */
+        }
+        @media (min-width: 768px) { /* md */
+            .scroll-card { width: 22%; } /* ~4.5 cards */
+        }
+        @media (min-width: 1024px) { /* lg */
+            .scroll-card { width: 18%; } /* ~5.5 cards */
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white antialiased">
+
+    <!-- CABEÇALHO FIXO -->
+    <header class="bg-gray-800 p-4 shadow-lg sticky top-0 z-40">
+        <div class="container mx-auto flex justify-between items-center">
+            <!-- Logo/Home Button -->
+            <h1 class="text-3xl font-bold text-red-500 cursor-pointer" onclick="showView('home-view')">
+                LOCAFLIX
+            </h1>
+            <!-- Botão de Login (Simulação) -->
+            <button class="bg-red-600 px-5 py-2 rounded-lg font-semibold hover:bg-red-700 transition-colors duration-300">
+                Login
+            </button>
+        </div>
+    </header>
+
+    <!-- CONTAINER PRINCIPAL -->
+    <main class="container mx-auto p-4 md:p-8">
+
+        <!-- 
+          VIEW 1: PÁGINA INICIAL (FILTROS E LISTAGEM)
+          Visível por padrão
+        -->
+        <div id="home-view" class="view">
+
+            <!-- NOVO: Seção Hero -->
+            <section class="relative bg-gray-800 rounded-xl shadow-lg overflow-hidden mb-12" style="background-image: url('https://placehold.co/1200x400/1f2937/ef4444?text=Seu+Próximo+Filme+Favorito'); background-size: cover; background-position: center 30%;">
+                <!-- Overlay gradiente para legibilidade -->
+                <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/70 to-transparent"></div>
+                
+                <div class="relative z-10 p-8 md:p-16 flex flex-col items-start w-full md:w-2/3">
+                    <h2 class="text-4xl md:text-5xl font-bold text-white mb-4 drop-shadow-lg">O Agente Vermelho</h2>
+                    <p class="text-lg text-gray-200 mb-8 drop-shadow-md">
+                        O melhor agente da CIA descobre segredos sombrios da agência e se torna o principal alvo. Uma caçada humana global se inicia.
+                    </p>
+                    <button class="bg-red-600 px-8 py-3 rounded-lg font-bold text-lg hover:bg-red-700 transition-transform duration-300 hover:scale-105 shadow-lg">
+                        Alugar Agora
+                    </button>
+                </div>
+            </section>
+
+            <!-- Seção de Filtros (Modificada) -->
+            <section class="mb-10">
+                <!-- Filtro de Busca por Texto -->
+                <input 
+                    type="search" 
+                    id="search-bar"
+                    placeholder="Buscar por título..." 
+                    class="w-full p-4 bg-gray-800 rounded-lg border border-gray-700 focus:ring-2 focus:ring-red-500 focus:outline-none transition text-lg"
+                    onkeyup="filterRowsAndSearch()"
+                >
+                <!-- NOVOS: Filtros de Gênero por Botão -->
+                <div id="genre-buttons" class="flex flex-wrap gap-3 mt-6">
+                    <button onclick="filterByGenre(this, 'todos')" class="genre-btn active">Todos</button>
+                    <button onclick="filterByGenre(this, 'acao')" class="genre-btn">Ação</button>
+                    <button onclick="filterByGenre(this, 'comedia')" class="genre-btn">Comédia</button>
+                    <button onclick="filterByGenre(this, 'drama')" class="genre-btn">Drama</button>
+                    <button onclick="filterByGenre(this, 'sci-fi')" class="genre-btn">Ficção Científica</button>
+                    <button onclick="filterByGenre(this, 'terror')" class="genre-btn">Terror</button>
+                </div>
+            </section>
+
+            <!-- Seção de Listagem de Filmes (Reestruturada com Carrosséis) -->
+            <section id="movie-carousels">
+                
+                <!-- Categoria 1: Lançamentos -->
+                <section class="movie-row" data-category="lancamentos">
+                    <h2 class="text-3xl font-bold mb-2">Lançamentos</h2>
+                    <div class="scroll-container">
+                        <!-- Card 1 (Ação) -->
+                        <div class="scroll-card movie-card" data-genre="acao" data-title="O Agente Vermelho" onclick="showMovieDetail('1', 'O Agente Vermelho', 'Ação', '9,99')">
+                            <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg cursor-pointer h-full">
+                                <img src="https://placehold.co/300x450/1f2937/ef4444?text=O+Agente+Vermelho" alt="Poster O Agente Vermelho" class="w-full h-auto">
+                                <div class="p-3">
+                                    <h3 class="font-semibold text-lg truncate">O Agente Vermelho</h3>
+                                    <p class="text-sm text-gray-400">Ação</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Card 4 (Sci-Fi) -->
+                        <div class="scroll-card movie-card" data-genre="sci-fi" data-title="Crônicas de Marte" onclick="showMovieDetail('4', 'Crônicas de Marte', 'Ficção Científica', '12,99')">
+                            <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg cursor-pointer h-full">
+                                <img src="https://placehold.co/300x450/1f2937/8b5cf6?text=Crônicas+de+Marte" alt="Poster Crônicas de Marte" class="w-full h-auto">
+                                <div class="p-3">
+                                    <h3 class="font-semibold text-lg truncate">Crônicas de Marte</h3>
+                                    <p class="text-sm text-gray-400">Ficção Científica</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Card 6 (Ação) -->
+                        <div class="scroll-card movie-card" data-genre="acao" data-title="Invasão Urbana" onclick="showMovieDetail('6', 'Invasão Urbana', 'Ação', '12,99')">
+                            <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg cursor-pointer h-full">
+                                <img src="https://placehold.co/300x450/1f2937/ef4444?text=Invasão+Urbana" alt="Poster Invasão Urbana" class="w-full h-auto">
+                                <div class="p-3">
+                                    <h3 class="font-semibold text-lg truncate">Invasão Urbana</h3>
+                                    <p class="text-sm text-gray-400">Ação</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Card 8 (Sci-Fi) -->
+                        <div class="scroll-card movie-card" data-genre="sci-fi" data-title="O Paradoxo" onclick="showMovieDetail('8', 'O Paradoxo', 'Ficção Científica', '9,99')">
+                            <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg cursor-pointer h-full">
+                                <img src="https://placehold.co/300x450/1f2937/8b5cf6?text=O+Paradoxo" alt="Poster O Paradoxo" class="w-full h-auto">
+                                <div class="p-3">
+                                    <h3 class="font-semibold text-lg truncate">O Paradoxo</h3>
+                                    <p class="text-sm text-gray-400">Ficção Científica</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Categoria 2: Ação -->
+                <section class="movie-row" data-category="acao">
+                    <h2 class="text-3xl font-bold mb-2">Ação</h2>
+                    <div class="scroll-container">
+                        <!-- Card 1 (Ação) - Duplicado para exemplo -->
+                        <div class="scroll-card movie-card" data-genre="acao" data-title="O Agente Vermelho" onclick="showMovieDetail('1', 'O Agente Vermelho', 'Ação', '9,99')">
+                            <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg cursor-pointer h-full">
+                                <img src="https://placehold.co/300x450/1f2937/ef4444?text=O+Agente+Vermelho" alt="Poster O Agente Vermelho" class="w-full h-auto">
+                                <div class="p-3">
+                                    <h3 class="font-semibold text-lg truncate">O Agente Vermelho</h3>
+                                    <p class="text-sm text-gray-400">Ação</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Card 6 (Ação) - Duplicado para exemplo -->
+                        <div class="scroll-card movie-card" data-genre="acao" data-title="Invasão Urbana" onclick="showMovieDetail('6', 'Invasão Urbana', 'Ação', '12,99')">
+                            <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg cursor-pointer h-full">
+                                <img src="https://placehold.co/300x450/1f2937/ef4444?text=Invasão+Urbana" alt="Poster Invasão Urbana" class="w-full h-auto">
+                                <div class="p-3">
+                                    <h3 class="font-semibold text-lg truncate">Invasão Urbana</h3>
+                                    <p class="text-sm text-gray-400">Ação</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Categoria 3: Comédia -->
+                <section class="movie-row" data-category="comedia">
+                    <h2 class="text-3xl font-bold mb-2">Comédia</h2>
+                    <div class="scroll-container">
+                        <!-- Card 2 (Comédia) -->
+                        <div class="scroll-card movie-card" data-genre="comedia" data-title="Rindo Alto" onclick="showMovieDetail('2', 'Rindo Alto', 'Comédia', '7,99')">
+                            <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg cursor-pointer h-full">
+                                <img src="https://placehold.co/300x450/1f2937/f59e0b?text=Rindo+Alto" alt="Poster Rindo Alto" class="w-full h-auto">
+                                <div class="p-3">
+                                    <h3 class="font-semibold text-lg truncate">Rindo Alto</h3>
+                                    <p class="text-sm text-gray-400">Comédia</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Card 7 (Comédia) -->
+                        <div class="scroll-card movie-card" data-genre="comedia" data-title="Vizinhos Barulhentos" onclick="showMovieDetail('7', 'Vizinhos Barulhentos', 'Comédia', '7,99')">
+                            <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg cursor-pointer h-full">
+                                <img src="https://placehold.co/300x450/1f2937/f59e0b?text=Vizinhos+Barulhentos" alt="Poster Vizinhos Barulhentos" class="w-full h-auto">
+                                <div class="p-3">
+                                    <h3 class="font-semibold text-lg truncate">Vizinhos Barulhentos</h3>
+                                    <p class="text-sm text-gray-400">Comédia</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Categoria 4: Drama & Terror -->
+                <section class="movie-row" data-category="classicos">
+                    <h2 class="text-3xl font-bold mb-2">Clássicos</h2>
+                    <div class="scroll-container">
+                        <!-- Card 3 (Drama) -->
+                        <div class="scroll-card movie-card" data-genre="drama" data-title="Lágrimas no Asfalto" onclick="showMovieDetail('3', 'Lágrimas no Asfalto', 'Drama', '9,99')">
+                            <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg cursor-pointer h-full">
+                                <img src="https://placehold.co/300x450/1f2937/3b82f6?text=Lágrimas+no+Asfalto" alt="Poster Lágrimas no Asfalto" class="w-full h-auto">
+                                <div class="p-3">
+                                    <h3 class="font-semibold text-lg truncate">Lágrimas no Asfalto</h3>
+                                    <p class="text-sm text-gray-400">Drama</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Card 5 (Terror) -->
+                        <div class="scroll-card movie-card" data-genre="terror" data-title="A Casa da Colina" onclick="showMovieDetail('5', 'A Casa da Colina', 'Terror', '9,99')">
+                            <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg cursor-pointer h-full">
+                                <img src="https://placehold.co/300x450/1f2937/4b5563?text=A+Casa+da+Colina" alt="Poster A Casa da Colina" class="w-full h-auto">
+                                <div class="p-3">
+                                    <h3 class="font-semibold text-lg truncate">A Casa da Colina</h3>
+                                    <p class="text-sm text-gray-400">Terror</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </section>
+        </div>
+
+        <!-- 
+          VIEW 2: PÁGINA DE DETALHES DO FILME
+          Oculta por padrão
+        -->
+        <div id="detail-view" class="view hidden">
+            <!-- Botão Voltar -->
+            <button onclick="showView('home-view')" class="mb-6 text-red-500 hover:text-red-400 font-semibold text-lg transition-colors">
+                &larr; Voltar para a lista
+            </button>
+            
+            <div class="flex flex-col md:flex-row gap-8">
+                <!-- Poster do Filme -->
+                <div class="w-full md:w-1/3">
+                    <img id="detail-poster" src="" alt="Poster do Filme" class="w-full rounded-lg shadow-lg">
+                </div>
+                
+                <!-- Informações do Filme -->
+                <div class="w-full md:w-2/3">
+                    <h2 id="detail-title" class="text-4xl md:text-5xl font-bold mb-3">Título do Filme</h2>
+                    <div class="flex items-center flex-wrap gap-4 mb-6 text-gray-400">
+                        <span id="detail-genre" class="bg-gray-700 px-3 py-1 rounded-full text-sm font-medium">Gênero</span>
+                        <span class="text-sm">2024</span>
+                        <span class="text-sm">2h 15m</span>
+                    </div>
+                    
+                    <p id="detail-description" class="text-lg text-gray-300 mb-8">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                    </p>
+                    
+                    <!-- Simulação de Trailer -->
+                    <div class="bg-black rounded-lg h-64 w-full flex items-center justify-center text-gray-500 mb-8 shadow-inner relative overflow-hidden">
+                        <img id="detail-trailer-bg" src="" alt="Fundo do Trailer" class="absolute w-full h-full object-cover opacity-30 blur-sm">
+                        <div class="relative z-10 flex items-center">
+                            <svg class="w-16 h-16 text-gray-300" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
+                            <span class="ml-3 text-lg font-semibold">Ver Trailer</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Botão de Ação (Alugar/Comprar) -->
+                    <button id="rent-button" onclick="showView('checkout-view')" class="w-full bg-red-600 text-white text-xl font-bold py-4 rounded-lg hover:bg-red-700 transition-all duration-300 shadow-lg hover:shadow-red-500/30">
+                        Alugar por R$ 9,99
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 
+          VIEW 3: PÁGINA DE CHECKOUT (PAGAMENTO)
+          Oculta por padrão
+        -->
+        <div id="checkout-view" class="view hidden">
+            <!-- Botão Voltar -->
+            <button onclick="showView('detail-view')" class="mb-6 text-red-500 hover:text-red-400 font-semibold text-lg transition-colors">
+                &larr; Voltar aos detalhes
+            </button>
+
+            <!-- Card de Checkout -->
+            <div class="max-w-2xl mx-auto bg-gray-800 p-8 rounded-xl shadow-2xl">
+                <h2 class="text-3xl font-bold mb-8 text-center">Finalizar Compra</h2>
+                
+                <!-- Resumo do Pedido -->
+                <div class="bg-gray-700 p-5 rounded-lg mb-8 flex justify-between items-center">
+                    <div>
+                        <p class="text-gray-400 text-sm">Filme</p>
+                        <p id="checkout-title" class="font-semibold text-lg">Título do Filme</p>
+                    </div>
+                    <span id="checkout-price" class="font-bold text-2xl text-red-400">R$ 9,99</span>
+                </div>
+
+                <!-- Formulário de Pagamento -->
+                <form id="payment-form" onsubmit="handlePayment(event)">
+                    <div class="space-y-6">
+                        <!-- Nome no Cartão -->
+                        <div>
+                            <label for="card-name" class="block text-sm font-medium text-gray-300 mb-2">Nome no Cartão</label>
+                            <input type="text" id="card-name" required class="w-full p-3 bg-gray-700 rounded-lg border border-gray-600 focus:ring-2 focus:ring-red-500 focus:outline-none transition" placeholder="Nome como aparece no cartão">
+                        </div>
+                        
+                        <!-- Número do Cartão -->
+                        <div>
+                            <label for="card-number" class="block text-sm font-medium text-gray-300 mb-2">Número do Cartão</label>
+                            <input type="tel" id="card-number" required class="w-full p-3 bg-gray-700 rounded-lg border border-gray-600 focus:ring-2 focus:ring-red-500 focus:outline-none transition" placeholder="•••• •••• •••• ••••" inputmode="numeric">
+                        </div>
+                        
+                        <!-- Validade e CVC -->
+                        <div class="flex flex-col sm:flex-row gap-6">
+                            <div class="flex-1">
+                                <label for="card-expiry" class="block text-sm font-medium text-gray-300 mb-2">Validade</label>
+                                <input type="text" id="card-expiry" required class="w-full p-3 bg-gray-700 rounded-lg border border-gray-600 focus:ring-2 focus:ring-red-500 focus:outline-none transition" placeholder="MM/AA">
+                            </div>
+                            <div class="flex-1">
+                                <label for="card-cvc" class="block text-sm font-medium text-gray-300 mb-2">CVC</label>
+                                <input type="text" id="card-cvc" required class="w-full p-3 bg-gray-700 rounded-lg border border-gray-600 focus:ring-2 focus:ring-red-500 focus:outline-none transition" placeholder="123" inputmode="numeric">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Botão de Confirmação -->
+                    <button type="submit" class="w-full bg-red-600 text-white text-xl font-bold py-4 rounded-lg hover:bg-red-700 transition-all duration-300 shadow-lg hover:shadow-red-500/30 mt-10">
+                        Confirmar Pagamento
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    </main>
+    
+    <!-- 
+      MODAL DE SUCESSO
+      Oculto por padrão, aparece sobre todo o conteúdo
+    -->
+    <div id="success-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-50 hidden transition-opacity duration-300">
+        <div class="bg-gray-800 p-10 rounded-xl shadow-2xl text-center max-w-sm w-full transform scale-95 transition-transform duration-300">
+            <!-- Ícone de Sucesso -->
+            <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6 ring-4 ring-green-500/30">
+                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            </div>
+            
+            <h2 class="text-2xl font-bold mb-4">Pagamento Aprovado!</h2>
+            <p class="text-gray-300 mb-8">Seu filme já está disponível na sua conta. Aproveite!</p>
+            
+            <button onclick="closeModalAndHome()" class="w-full bg-red-600 px-6 py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors duration-300">
+                Voltar ao Início
+            </button>
+        </div>
+    </div>
+
+
+    <!-- JAVASCRIPT PARA CONTROLE DO FLUXO -->
+    <script>
+        // --- ESTADO GLOBAL ---
+        let currentGenre = 'todos'; // Estado global para o gênero
+
+        // --- CONTROLE DE NAVEGAÇÃO ---
+
+        // Função central para mostrar/ocultar as "views" (páginas)
+        function showView(viewId) {
+            // Esconde todas as views
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.add('hidden');
+            });
+            
+            // Mostra a view desejada
+            const activeView = document.getElementById(viewId);
+            if (activeView) {
+                activeView.classList.remove('hidden');
+            }
+            
+            // Rola a página para o topo
+            window.scrollTo(0, 0);
+        }
+
+        // Função para popular e mostrar a página de detalhes
+        function showMovieDetail(id, title, genre, price) {
+            const posterUrl = `https://placehold.co/400x600/1f2937/ef4444?text=${encodeURIComponent(title)}`;
+            
+            // Popula os dados na página de detalhes
+            document.getElementById('detail-poster').src = posterUrl;
+            document.getElementById('detail-trailer-bg').src = posterUrl; // Usa poster no fundo do trailer
+            document.getElementById('detail-title').innerText = title;
+            document.getElementById('detail-genre').innerText = genre;
+            document.getElementById('detail-description').innerText = `Descrição de exemplo para o filme "${title}". Acompanhe esta incrível jornada de ${genre.toLowerCase()} que vai prender sua atenção do início ao fim.`;
+            
+            // Atualiza o botão de aluguel e a página de checkout
+            const priceText = `R$ ${price}`;
+            document.getElementById('rent-button').innerText = `Alugar por ${priceText}`;
+            document.getElementById('checkout-title').innerText = title;
+            document.getElementById('checkout-price').innerText = priceText;
+            
+            // Mostra a view de detalhes
+            showView('detail-view');
+        }
+
+        // --- LÓGICA DE FILTRO DA PÁGINA INICIAL ---
+
+        // NOVO: Função para atualizar o botão de gênero ativo
+        function filterByGenre(buttonElement, genre) {
+            currentGenre = genre;
+            
+            // Atualiza classes dos botões
+            document.querySelectorAll('.genre-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            buttonElement.classList.add('active');
+            
+            // Chama a função principal de filtro
+            filterRowsAndSearch();
+        }
+
+        // MODIFICADA: Função de filtro principal (agora filtra linhas E cartões)
+        function filterRowsAndSearch() {
+            const selectedGenre = currentGenre;
+            const searchQuery = document.getElementById('search-bar').value.toLowerCase();
+            
+            // Itera sobre cada LINHA de categoria (ex: "Lançamentos", "Ação")
+            document.querySelectorAll('.movie-row').forEach(row => {
+                let rowHasVisibleCards = false;
+                
+                // Itera sobre cada CARTÃO dentro desta linha
+                row.querySelectorAll('.movie-card').forEach(card => {
+                    const cardGenre = card.dataset.genre;
+                    const cardTitle = card.dataset.title.toLowerCase();
+                    
+                    // Verifica as condições de filtro
+                    const genreMatch = (selectedGenre === 'todos' || cardGenre === selectedGenre);
+                    const searchMatch = cardTitle.includes(searchQuery);
+
+                    // Mostra ou esconde o CARTÃO
+                    if (genreMatch && searchMatch) {
+                        card.style.display = 'block';
+                        rowHasVisibleCards = true; // Marca a linha como tendo conteúdo
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                // Mostra ou esconde a LINHA inteira
+                if (rowHasVisibleCards) {
+                    row.style.display = 'block';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+        
+        // --- LÓGICA DE CHECKOUT E MODAL ---
+
+        // Função para lidar com a submissão do pagamento
+        function handlePayment(event) {
+            event.preventDefault(); // Impede o envio real do formulário
+            
+            // Mostra o modal de sucesso
+            const modal = document.getElementById('success-modal');
+            modal.classList.remove('hidden');
+            
+            // Adiciona uma pequena animação de "pop-up"
+            setTimeout(() => {
+                modal.querySelector('div').classList.remove('scale-95');
+                modal.querySelector('div').classList.add('scale-100');
+            }, 10);
+        }
+        
+        // Função para fechar o modal e voltar para a home
+        function closeModalAndHome() {
+            const modal = document.getElementById('success-modal');
+            
+            // Animação de "fade-out"
+            modal.querySelector('div').classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                
+                // Reseta o formulário de pagamento
+                document.getElementById('payment-form').reset();
+                
+                // Volta para a home
+                showView('home-view');
+            }, 300);
+        }
+
+        // Garante que a view inicial seja exibida ao carregar
+        document.addEventListener('DOMContentLoaded', () => {
+            showView('home-view');
+            // Garante que os filtros sejam aplicados no carregamento (importante se houver valores padrão)
+            filterRowsAndSearch();
+        });
+    </script>
+
+</body>
+</html>

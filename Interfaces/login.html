@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MovieStar - Login</title>
+    <style>
+        
+        /* 1. Reset Básico e Fundo Escuro */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            background-color: #1a1a1a; 
+            color: #ffffff; 
+        }
+        
+        /* 2. Centralização do Container (corpo) */
+        .log_in {
+            display: flex;
+            justify-content: center; 
+            align-items: center; 
+            height: 100%;
+        }
+        
+        /* 3. Estilização do Formulário/Card de Login */
+        .texts_log_in {
+            background-color: #2c2c2c; 
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 40px; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); 
+            width: 350px; 
+            min-height: auto; 
+            text-align: center; 
+        }
+        
+        h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+            color: #ff9900; 
+        }
+        
+        /* 4. Estilização dos Campos de Input */
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #444; 
+            border-radius: 4px;
+            background-color: #383838; 
+            color: #ffffff;
+            box-sizing: border-box; 
+            font-size: 16px;
+        }
+
+        input::placeholder {
+            color: #ccc; 
+        }
+
+        /* 5. Estilização do Botão de Login */
+        button[type="submit"] {
+            background-color: #ff9900; 
+            color: #ffffff;
+            font-size: 18px;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #ffb84d; 
+            box-shadow: 0 5px 15px rgba(255, 153, 0, 0.4);
+        }
+
+        /* 6. Estilização da Seção de Cadastro */
+        article {
+            margin-top: 15px;
+            color: #ffffff;
+        }
+
+        article p {
+            margin-bottom: 10px;
+        }
+        
+        /* 7. Melhoria do Link de Cadastro (estilizado como botão) */
+        article a {
+            background-color: #444444; 
+            color: #ffffff;
+            padding: 8px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 14px;
+            border: none;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            display: inline-block; 
+        }
+        
+        article a:hover {
+           background-color: #555555;
+           box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+
+<body class="log_in">
+    <form action="/login" method="POST" class="texts_log_in">
+        <h1>Login</h1>
+        <input type="email" id="email" name="email" placeholder="E-mail" required>
+        <input type="password" id="senha" name="senha" placeholder="Senha" required>
+        
+        <button type="submit">Entrar</button>
+        
+        <article>
+            <p>É novo por aqui?</p>
+            <a href="index_cadastro.html">Criar Conta</a>
+        </article>
+    </form>
+</body>
+</html>

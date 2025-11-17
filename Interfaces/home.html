@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MovieStar - Página Principal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ====================================================================== */
+        /* VARIÁVEIS E ESTILOS GLOBAIS (BASEADOS NO TEMA DARK MODE) */
+        /* ====================================================================== */
+        :root {
+            --bg-dark: #141414;
+            --bg-card: #2c2c2c;
+            --color-primary: #ff9900; /* Laranja de destaque */
+            --color-secondary: #fff;
+            --color-text: #ccc;
+            --color-hover: #ffad33;
+            --font-oswald: 'Oswald', sans-serif;
+        }
+
+        /* Base e Tema Escuro */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: var(--font-oswald), sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--color-text);
+        }
+
+        a {
+            color: var(--color-text);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        h2 {
+            color: var(--color-secondary);
+            font-size: 2em;
+            padding: 20px 50px 10px;
+            margin-top: 30px;
+        }
+
+        /* ====================================================================== */
+        /* ESTILOS DO CABEÇALHO (HEADER) - Página Principal */
+        /* ====================================================================== */
+        .header {
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 15px 50px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-size: 1.8em;
+            color: var(--color-primary);
+            font-weight: 700;
+        }
+
+        .nav-search input {
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 1px solid #333;
+            background-color: #333;
+            color: var(--color-secondary);
+            width: 300px;
+            transition: width 0.3s, background-color 0.3s;
+        }
+
+        .nav-search input:focus {
+            width: 350px;
+            background-color: #444;
+            outline: none;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn-secondary, .btn-icon {
+            padding: 8px 15px;
+            border-radius: 5px;
+            background-color: #333;
+            color: var(--color-secondary);
+            border: 1px solid #555;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        .btn-icon {
+            padding: 8px 12px;
+            font-size: 1.2em;
+        }
+
+        .btn-secondary:hover, .btn-icon:hover {
+            background-color: #555;
+            box-shadow: 0 0 8px rgba(255, 153, 0, 0.3);
+        }
+
+        /* ====================================================================== */
+        /* ESTILOS DO DESTAQUE (HERO SECTION) */
+        /* ====================================================================== */
+        .hero-section {
+            position: relative;
+            /* ✅ CORRIGIDO: Usando o caminho da pasta imagens do repositório */
+            background: url('../imagens/DemonSlayer_Fundo.jpg') no-repeat center center/cover; 
+            height: 70vh;
+            display: flex;
+            align-items: flex-end;
+            padding: 0 50px 50px;
+        }
+
+        .hero-overlay {
+            background: linear-gradient(to right, rgba(20, 20, 20, 0.9) 30%, transparent 100%);
+            padding: 20px;
+            width: 50%;
+        }
+
+        .hero-title {
+            font-size: 4em;
+            color: var(--color-primary);
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px #000;
+        }
+
+        .hero-description {
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            line-height: 1.4;
+            color: #f0f0f0;
+        }
+
+        .hero.hero-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+            color: #aaa;
+        }
+
+        .hero-meta .genre {
+            color: var(--color-primary);
+            font-weight: bold;
+        }
+
+        .hero-buttons .btn-primary, .hero-buttons .btn-secondary {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin-right: 15px;
+            transition: transform 0.2s, box-shadow 0.3s;
+        }
+
+        .hero-buttons .btn-primary {
+            background-color: var(--color-primary);
+            color: var(--bg-dark);
+            font-weight: bold;
+        }
+
+        .hero-buttons .btn-primary:hover {
+            background-color: var(--color-hover);
+            transform: scale(1.05);
+        }
+
+        /* ====================================================================== */
+        /* ESTILOS DOS CARROSSEIS (ASSUMIDO QUE ESTAVAM EM carrosel.css) */
+        /* ====================================================================== */
+
+        .carrossel-container {
+            position: relative;
+            padding: 0 50px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+        }
+
+        .carrossel {
+            display: flex;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            gap: 15px;
+            padding: 10px 0;
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+        }
+
+        .carrossel::-webkit-scrollbar {
+            display: none; /* Chrome, Safari and Opera */
+        }
+
+        .carrossel-container .btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: var(--color-secondary);
+            border: none;
+            padding: 15px 10px;
+            cursor: pointer;
+            z-index: 50;
+            font-size: 1.5em;
+            transition: background 0.3s;
+        }
+
+        .carrossel-container .btn:hover {
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        .btn-left {
+            left: 20px;
+        }
+
+        .btn-right {
+            right: 20px;
+        }
+
+        .filme {
+            flex: 0 0 auto;
+            width: 180px; /* Largura padrão para pôster */
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: transform 0.3s;
+        }
+
+        .filme:hover {
+            transform: scale(1.08);
+            z-index: 50;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .filme img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+
+        .filme .overlay {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            opacity: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 10px;
+            transition: opacity 0.3s;
+        }
+
+        .filme:hover .overlay {
+            opacity: 1;
+        }
+
+        .overlay p {
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+
+        .overlay button {
+            margin-top: 5px;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.9em;
+            width: 90%;
+            transition: background-color 0.2s;
+        }
+
+        .overlay .add-cart {
+            background-color: var(--color-primary);
+            color: var(--bg-dark);
+            font-weight: bold;
+        }
+        
+        .overlay .add-cart:hover {
+            background-color: var(--color-hover);
+        }
+
+        .overlay .view-trailer {
+            background-color: #555;
+            color: var(--color-secondary);
+        }
+        
+        .overlay .view-trailer:hover {
+            background-color: #777;
+        }
+
+
+        /* ====================================================================== */
+        /* ESTILOS DE LOGIN/CADASTRO (Inclusos para referência, fora do fluxo MAIN) */
+        /* ====================================================================== */
+
+        /* Centralização para telas de Login/Cadastro (Não usado na principal) */
+        .auth-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: var(--bg-dark);
+        }
+
+        /* Card de Login/Cadastro */
+        .auth-card {
+            background-color: var(--bg-card);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            width: 350px;
+            text-align: center;
+        }
+        
+        .auth-card h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+            color: var(--color-primary);
+        }
+        
+        .auth-card input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #444;
+            border-radius: 4px;
+            background-color: #383838;
+            color: var(--color-secondary);
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        .auth-card button {
+            background-color: var(--color-primary);
+            color: var(--bg-dark);
+            font-size: 18px;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        .auth-card button:hover {
+            background-color: var(--color-hover);
+            box-shadow: 0 5px 15px rgba(255, 153, 0, 0.4);
+        }
+        
+        .auth-card article {
+            margin-top: 15px;
+            color: var(--color-text);
+        }
+
+        .auth-card article a {
+            background-color: #444444;
+            color: var(--color-secondary);
+            padding: 8px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 14px;
+            display: inline-block;
+        }
+        
+        .auth-card article a:hover {
+           background-color: #555555;
+           box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+
+        .footer {
+            background-color: #000;
+            padding: 30px 50px;
+            margin-top: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9em;
+        }
+
+        .footer-logo {
+            font-size: 1.5em;
+            color: var(--color-primary);
+            font-weight: 700;
+        }
+
+        .footer-info a {
+            margin-right: 20px;
+            color: #999;
+        }
+
+        .footer-info p {
+            margin-top: 5px;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body class="app">
+    <header class="header">
+        <nav class="nav-bar">
+            <a href="#" class="nav-logo">MovieStar⭐</a>
+            <div class="nav-search">
+                <input type="text" id="campoBusca" placeholder="🔍 Buscar filme...">
+            </div>
+            <div class="nav-actions">
+                <a class="btn-secondary" href="index_login.html">Log-in</a>
+                <a class="btn-icon" href="index_carrinho.html">🛒</a>
+            </div>
+        </nav>
+    </header>
+    
+    <main>
+        <section class="hero-section" id="destaque">
+            <div class="hero-overlay">
+                <h1 class="hero-title">Demon Slayer</h1>
+                <p class="hero-description">
+                    Um menino criado por javali embarca no Trem Infinito em uma nova missão com o Pilar da Chama, 
+                    junto com outro menino que revela seu verdadeiro poder quando dorme. A missão deles é derrotar um demônio que tem atormentado as pessoas.
+                </p>
+                <div class="hero-meta">
+                    <span class="meta-item">IMDb 8,6</span>
+                    <span class="meta-item">2h35m</span>
+                    <span class="meta-item">2025</span>
+                    <span class="meta-item genre">Ação | Aventura</span>
+                </div>
+                <div class="hero-buttons">
+                    <button class="btn-primary">Alugar R$7,90</button>
+                    <button class="btn-secondary" onclick="window.location.href='trailer.html?filme=demon-slayer'">▶ Ver Trailer</button>
+                </div>
+            </div>
+        </section>
+
+        <h2>Populares na Plataforma</h2>
+        <section class="carrossel-container" id="populares">
+            <button class="btn btn-left" data-target="populares">&#10094;</button>
+            <div class="carrossel">
+                <article class="filme"><img src="../imagens/robocop.jpg" alt="robocop"><div class="overlay"><p>Alugar por R$ 7,90</p><button class="add-cart">Adicionar ao carrinho</button><button class="view-trailer" onclick="window.location.href='trailer.html?filme=robocop'">Ver trailer</button></div></article>
+                <article class="filme"><img src="../imagens/Wardering.jpg" alt="wardering"><div class="overlay"><p>Alugar por R$ 7,90</p><button class="add-cart">Adicionar ao carrinho</button><button class="view-trailer" onclick="window.location.href='trailer.html?filme=wardering'">Ver trailer</button></div></article>
+                <article class="filme"><img src="../imagens/ThunderBolts.jpg" alt="thunderbolts"><div class="overlay"><p>Alugar por R$ 7,90</p><button class="add-cart">Adicionar ao carrinho</button><button class="view-trailer" onclick="window.location.href='trailer.html?filme=thunderbolts'">Ver trailer</button></div></article>
+                <article class="filme"><img src="../imagens/Uncharted.jpeg" alt="Uncharted"><div class="overlay"><p>Alugar por R$ 7,90</p><button class="add-cart">Adicionar ao carrinho</button><button class="view-trailer" onclick="window.location.href='trailer.html?filme=uncharted'">Ver trailer</button></div></article>
+                <article class="filme"><img src="../imagens/MadMax.jpeg" alt="MadMax"><div class="overlay"><p>Alugar por R$ 7,90</p><button class="add-cart">Adicionar ao carrinho</button><button class="view-trailer" onclick="window.location.href='trailer.html?filme=madmax'">Ver trailer</button></div></article>
+                <article class="filme"><img src="../imagens/DeVoltaParaoFuturo.jpeg" alt="De Volta Para o Futuro"><div class="overlay"><p>Alugar por R$ 7,90</p><button class="add-cart">Adicionar ao carrinho</button><button class="view-trailer" onclick="window.location.href='trailer.html?filme=devoltaparaofuturo'">Ver trailer</button></div></article>
+            </div>
+            <button class="btn btn-right" data-target="populares">&#10095;</button>
+        </section>
+
+        <h2>Para toda família</h2>
+        <section class="carrossel-container" id="familia">
+            <button class="btn btn-left" data-target="familia">&#10094;</button>
+            <div class="carrossel">
+                <article class="filme"><img src="../imagens/Soul.jpg" alt="Soul"><div class="overlay"><p>Alugar por R$ 7,90</p><button class="add-cart">Adicionar ao carrinho</button><button class="view-trailer" onclick="window.location.href='trailer.html?filme=soul'">Ver trailer</button></div></article>
+                <article class="filme"><img src="../imagens/UmaFamiliaFeliz.jpg" alt="Uma Familia Feliz"><div class="overlay"><p>Alugar por R$ 7,90</p><button class="add-cart">Adicionar ao carrinho</button><button class="view-trailer" onclick="window.location.href='trailer.html?filme=umafamiliafeliz'">Ver trailer</button></div></article>
+                <article class="filme"><img src="../imagens/PetsaVidaSelvagem.webp" alt="Pets a Vida Selvagem"><div class="overlay"><p>Alugar por R$ 7,90</p><button class="add-cart">Adicionar ao carrinho</button><button class="view-trailer" onclick="window.location.href='trailer.html?filme=petsavidaselvagem'">Ver trailer</button></div></article>
+                <article class="filme"><img src="../imagens/EstreladeBelem.jpg" alt="Estrela de Belem"><div class="overlay"><p>Alugar por R$ 7,90</p><button class="add-cart">Adicionar ao carrinho</button><button class="view-trailer" onclick="window.location.href='trailer.html?filme=estreladebelem'">Ver trailer</button></div></article>
+                <article class="filme"><img src="../imagens/aCaminhodeCasa.jpg" alt="a Caminho de Casa"><div class="overlay"><p>Alugar por R$ 7,90</p><button class="add-cart">Adicionar ao carrinho</button><button class="view-trailer" onclick="window.location.href='trailer.html?filme=acaminhodecasa'">Ver trailer</button></div></article>
+                <article class="filme"><img src="../imagens/Divertidamente.webp" alt="Divertidamente"><div class="overlay"><p>Alugar por R$ 7,90</p><button class="add-cart">Adicionar ao carrinho</button><button class="view-trailer" onclick="window.location.href='trailer.html?filme=divertidamente'">Ver trailer</button></div></article>
+            </div>
+            <button class="btn btn-right" data-target="familia">&#10095;</button>
+        </section>
+        
+        <h2>Aterrorizantes</h2>
+        <section class="carrossel-container" id="terror">
+            <button class="btn btn-left" data-target="terror">&#10094;</button>
+            <div class="carrossel">
+                <article class="filme"><img src="../imagens/naCompanhiadoMal.webp" alt="na Companhia do Mal"><div class="overlay"><p>Alugar por R$ 7,90</p><button class="add-cart">Adicionar ao carrinho</button><button class="view-trailer" onclick="window.location.href='trailer.html?filme=nacompanhiadomal'">Ver trailer</button></div></article>
+                <article class="filme"><img src="../imagens/session9.jpg" alt="sessão 9"><div class="overlay"><p>Alugar por R$ 7,90</p><button class="add-cart">Adicionar ao carrinho</button><button class="view-trailer" onclick="window.location.href='trailer.html?filme=sessao9'">Ver trailer</button></div></article>
+                <article class="filme"><img src="../imagens/Cadaver.webp" alt="Cadaver"><div class="overlay"><p>Alugar por R$ 7,90</p><button class="add-cart">Adicionar ao carrinho</button><button class="view-trailer" onclick="window.location.href='trailer.html?filme=cadaver'">Ver trailer</button></div></article>
+                <article class="filme"><img src="../imagens/Sinister.jpg" alt="A entidade"><div class="overlay"><p>Alugar por R$ 7,90</p><button class="add-cart">Adicionar ao carrinho</button><button class="view-trailer" onclick="window.location.href='trailer.html?filme=aentidade'">Ver trailer</button></div></article>
+                <article class="filme"><img src="../imagens/ItaCoisa.jpg" alt="It a Coisa"><div class="overlay"><p>Alugar por R$ 7,90</p><button class="add-cart">Adicionar ao carrinho</button><button class="view-trailer" onclick="window.location.href='trailer.html?filme=itacoisa'">Ver trailer</button></div></article>
+                <article class="filme"><img src="../imagens/FaleComigo.webp" alt="Fale Comigo"><div class="overlay"><p>Alugar por R$ 7,90</p><button class="add-cart">Adicionar ao carrinho</button><button class="view-trailer" onclick="window.location.href='trailer.html?filme=falecomigo'">Ver trailer</button></div></article>
+            </div>
+            <button class="btn btn-right" data-target="terror">&#10095;</button>
+        </section>
+        
+        <h2>Ação e aventura</h2>
+        <section class="carrossel-container" id="acao">
+            <button class="btn btn-left" data-target="acao">&#10094;</button>
+            <div class="carrossel">
+                <article class="filme"><img src="../imagens/Super8.jpg" alt="Super 8"><div class="overlay"><p>Alugar por R$ 7,90</p><button class="add-cart">Adicionar ao carrinho</button><button class="view-trailer" onclick="window.location.href='trailer.html?filme=super8'">Ver trailer</button></div></article>
+                <article class="filme"><img src="../imagens/NaSelva.jpg" alt="Na Selva"><div class="overlay"><p>Alugar por R$ 7,90</p><button class="add-cart">Adicionar ao carrinho</button><button class="view-trailer" onclick="window.location.href='trailer.html?filme=naselva'">Ver trailer</button></div></article>
+                <article class="filme"><img src="../imagens/DungeonsEdragons.jpg" alt="Dungeons E dragons"><div class="overlay"><p>Alugar por R$ 7,90</p><button class="add-cart">Adicionar ao carrinho</button><button class="view-trailer" onclick="window.location.href='trailer.html?filme=dungeonsedragons'">Ver trailer</button></div></article>
+                <article class="filme"><img src="../imagens/AgrandeMuralha.jpg" alt="A grande Muralha"><div class="overlay"><p>Alugar por R$ 7,90</p><button class="add-cart">Adicionar ao carrinho</button><button class="view-trailer" onclick="window.location.href='trailer.html?filme=agrandemuralha'">Ver trailer</button></div></article>
+                <article class="filme"><img src="../imagens/MonsterHunter.jpg" alt="Monster Hunter"><div class="overlay"><p>Alugar por R$ 7,90</p><button class="add-cart">Adicionar ao carrinho</button><button class="view-trailer" onclick="window.location.href='trailer.html?filme=monsterhunter'">Ver trailer</button></div></article>
+                <article class="filme"><img src="../imagens/OsenhordosAneis.jpg" alt="O senhor dos Aneis"><div class="overlay"><p>Alugar por R$ 7,90</p><button class="add-cart">Adicionar ao carrinho</button><button class="view-trailer" onclick="window.location.href='trailer.html?filme=osenhordosaneis'">Ver trailer</button></div></article>
+            </div>
+            <button class="btn btn-right" data-target="acao">&#10095;</button>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p class="footer-logo">MovieStar⭐</p>
+        <div class="footer-info">
+            <a href="https://www.termsfeed.com/live/95e042e5-41de-4507-9929-43f2ed241a31">Termos e aviso de privacidade</a>
+            <p>©2025 - MovieStar, todos os direitos reservados</p>
+        </div>
+    </footer>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Itera sobre todos os carrosséis
+            const carrosselContainers = document.querySelectorAll('.carrossel-container');
+
+            carrosselContainers.forEach(container => {
+                const carrossel = container.querySelector('.carrossel');
+                const btnLeft = container.querySelector('.btn-left');
+                const btnRight = container.querySelector('.btn-right');
+
+                if (carrossel && btnLeft && btnRight) {
+                    
+                    btnLeft.addEventListener('click', () => {
+                        carrossel.scrollBy({
+                            left: -400, 
+                            behavior: 'smooth'
+                        });
+                    });
+
+                    btnRight.addEventListener('click', () => {
+                        carrossel.scrollBy({
+                            left: 400, 
+                            behavior: 'smooth'
+                        });
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
