@@ -22,7 +22,3 @@ Embora o repositório **Projeto_IHC** do ArthurSalesse não apresente código vi
 
 ---
 
-## Estrutura sugerida do repositório
-
-Aqui está uma proposta de como a estrutura de pastas do projeto poderia ser organizada:
-
