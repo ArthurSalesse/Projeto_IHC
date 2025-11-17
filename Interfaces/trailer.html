@@ -4,14 +4,45 @@
   <meta charset="UTF-8">
   <title>Trailer</title>
   <style>
-    html{
-      background-color: #fff4b8;
+    /* Variáveis do Dark Mode (Consistentes com index.html) */
+    :root {
+        --bg-dark: #141414; /* Fundo principal escuro */
+        --color-primary: #ff9900; /* Laranja de destaque */
+        --color-text: #ccc; /* Texto principal claro */
+        --font-oswald: 'Oswald', sans-serif;
     }
-    body { text-align: center; padding: 40px; font-family: sans-serif; }
-    iframe { width: 80%; height: 450px; border: none; }
+
+    html{
+      /* Aplica o fundo escuro */
+      background-color: var(--bg-dark); 
+    }
+    body { 
+      text-align: center; 
+      padding: 40px; 
+      /* Usa a fonte e cor de texto padrão */
+      font-family: var(--font-oswald), sans-serif; 
+      color: var(--color-text); 
+    }
+    iframe { 
+      width: 80%; 
+      height: 450px; 
+      border: none; 
+    }
+    h1 {
+      /* Título principal claro */
+      color: var(--color-text); 
+      font-size: 2.5em;
+    }
     h2{
       text-align: start;
       margin-top: 0px;
+      /* Logo laranja */
+      color: var(--color-primary); 
+      font-size: 1.8em;
+      padding: 0 50px;
+    }
+    #trailer-container p {
+      color: var(--color-text);
     }
   </style>
 </head>
